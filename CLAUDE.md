@@ -65,7 +65,7 @@ docker run -d \
   -e PAPERLESS_URL=http://paperless:8000 \
   -e PAPERLESS_TOKEN=your_api_token \
   -e LOG_LEVEL=INFO \
-  ghcr.io/yourusername/scan-drop:latest
+  ghcr.io/beanieboi/scan-drop:latest
 ```
 
 ### Docker Compose Integration
@@ -75,7 +75,7 @@ For integration with Paperless-ngx, add this service to your docker-compose.yml:
 ```yaml
 services:
   scan-drop:
-    image: ghcr.io/yourusername/scan-drop:latest
+    image: ghcr.io/beanieboi/scan-drop:latest
     container_name: scan-drop
     ports:
       - "2121:2121"
