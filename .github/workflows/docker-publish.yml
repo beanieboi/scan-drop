@@ -1,4 +1,4 @@
-name: Build and Publish Docker Image
+name: Build and Publish
 
 on:
   push:
@@ -12,7 +12,57 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  build-and-push:
+  build-binaries:
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version-file: 'go.mod'
+
+    - name: Build cross-platform binaries
+      run: |
+        # Linux AMD64
+        GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o scan-drop-linux-amd64 ./cmd/scan-drop
+        
+        # Linux ARM64
+        GOOS=linux GOARCH=arm64 go build -ldflags="-s -w" -o scan-drop-linux-arm64 ./cmd/scan-drop
+        
+        # macOS AMD64
+        GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" -o scan-drop-darwin-amd64 ./cmd/scan-drop
+        
+        # macOS ARM64 (Apple Silicon)
+        GOOS=darwin GOARCH=arm64 go build -ldflags="-s -w" -o scan-drop-darwin-arm64 ./cmd/scan-drop
+        
+        # Windows AMD64
+        GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o scan-drop-windows-amd64.exe ./cmd/scan-drop
+        
+        # Windows ARM64
+        GOOS=windows GOARCH=arm64 go build -ldflags="-s -w" -o scan-drop-windows-arm64.exe ./cmd/scan-drop
+
+    - name: Create checksums
+      run: |
+        sha256sum scan-drop-* > checksums.txt
+
+    - name: Upload binaries to release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          scan-drop-linux-amd64
+          scan-drop-linux-arm64
+          scan-drop-darwin-amd64
+          scan-drop-darwin-arm64
+          scan-drop-windows-amd64.exe
+          scan-drop-windows-arm64.exe
+          checksums.txt
+
+  build-and-push-docker:
     runs-on: ubuntu-latest
     permissions:
       contents: read
