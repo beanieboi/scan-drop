@@ -1,0 +1,8 @@
+# built binaries
+/scan-drop-linux
+/scan-drop
+.claude
+test.pdf
+README.dev
+paperless-ngx-test
+TEST.md
