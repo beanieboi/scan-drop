@@ -19,11 +19,11 @@ var logger *slog.Logger
 
 // Config holds the runtime configuration for the FTP server
 type Config struct {
-	Port            int
-	LogLevel        slog.Level
-	PaperlessURL    string
-	PaperlessToken  string
-	HTTPTimeout     time.Duration
+	Port           int
+	LogLevel       slog.Level
+	PaperlessURL   string
+	PaperlessToken string
+	HTTPTimeout    time.Duration
 }
 
 // NewConfig creates a new Config with default values
@@ -352,7 +352,6 @@ func (s *FTPServer) handleConnection(conn net.Conn) {
 		}
 	}
 }
-
 
 func (s *FTPServer) send(conn net.Conn, msg string) {
 	conn.Write([]byte(msg + "\r\n"))
